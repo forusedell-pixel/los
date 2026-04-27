@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Happy Birthday 🎉</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      text-align: center;
+      color: white;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      overflow-x: hidden;
+    }
+
+    .page {
+      display: none;
+      padding-top: 80px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+
+    .active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.15);
+      padding: 20px;
+      margin: auto;
+      border-radius: 15px;
+      width: 80%;
+      max-width: 350px;
+    }
+
+    input, button {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+    }
+
+    button {
+      background: white;
+      color: #007BFF;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    img {
+      width: 200px;
+      border-radius: 15px;
+      margin: 10px;
+    }
+
+    #cake {
+      width: 240px;
+      cursor: pointer;
+    }
+
+    #flames {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+    }
+
+    .spark {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* START SCREEN */
+    #startScreen {
+      position: fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:black;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+    }
+
+    /* COUNTDOWN */
+    #countdown {
+      font-size: 70px;
+      text-shadow: 0 0 20px white;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* BIG MESSAGE */
+    #finalWish {
+      font-size: 40px;
+      font-weight: bold;
+      text-shadow: 0 0 20px white;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen">
+  <button onclick="startSite()">Tap to Start 🎬</button>
+</div>
+
+<!-- PAGE 1 -->
+<div id="page1" class="page active">
+  <div class="card">
+    <h2>Enter Password 🔐</h2>
+    <p>Hint: last 4 digits of something special 😉</p>
+    <input type="password" id="pass">
+    <br>
+    <button onclick="checkPass()">Unlock</button>
+    <p id="wrong"></p>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div id="page2" class="page">
+  <div class="card">
+    <h1>🎂 Happy Birthday 🎂</h1>
+    <button onclick="startCelebration()">🎆 Surprise</button>
+
+    <div id="bigMsg" style="display:none;">
+      🎉 Something special is coming... 🎉
+    </div>
+
+    <br>
+    <button onclick="nextPage()">Next ➡️</button>
+  </div>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="pageCount" class="page">
+  <h1 id="countdown">3</h1>
+  <p>Get ready... ✨</p>
+</div>
+
+<!-- BIG REVEAL -->
+<div id="pageWish" class="page">
+  <div id="finalWish">🎉 HAPPY BIRTHDAY 🎉</div>
+  <p>Stay Happy Always 💙</p>
+</div>
+
+<!-- PAGE 3 -->
+<div id="page3" class="page">
+
+  <h2>✨ Memories ✨</h2>
+
+  <img src="https://picsum.photos/200">
+  <img src="https://picsum.photos/201">
+  <img src="https://picsum.photos/202">
+
+  <div style="position:relative; display:inline-block; margin-top:20px;">
+    <img id="cake"
+      src="https://images.unsplash.com/photo-1599785209796-786432b228bc?w=500"
+      onclick="blowCandle()">
+
+    <div style="position:absolute; top:55%; left:50%; transform:translate(-50%,-50%); font-weight:bold;">
+      YOUR NAME 💙
+    </div>
+
+    <div id="flames">🕯️ 🕯️ 🕯️</div>
+  </div>
+
+  <p id="cakeMsg" style="display:none;">🎉 Wish made! 🎂</p>
+
+  <br>
+  <button onclick="celebrate()">🎉 Let’s Celebrate</button>
+
+</div>
+
+<!-- AUDIO -->
+<audio id="music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5c6c4b8c71.mp3"></audio>
+<audio id="boom" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_c0a4a6d1a3.mp3"></audio>
+<audio id="blow" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_884fe92c49.mp3"></audio>
+
+<script>
+
+// START
+function startSite(){
+  let m = document.getElementById("music");
+  m.play().then(()=>{
+    m.pause();
+    m.currentTime = 0;
+  }).catch(()=>{});
+
+  document.getElementById("startScreen").style.display="none";
+}
+
+// PASSWORD
+function checkPass(){
+  if(document.getElementById("pass").value === "1234"){
+    document.getElementById("page1").classList.remove("active");
+    document.getElementById("page2").classList.add("active");
+  } else {
+    document.getElementById("wrong").innerText="Wrong password";
+  }
+}
+
+// NEXT → COUNTDOWN
+function nextPage(){
+  document.getElementById("page2").classList.remove("active");
+  document.getElementById("pageCount").classList.add("active");
+  startCountdown();
+}
+
+// COUNTDOWN
+function startCountdown(){
+  let count = 3;
+  let el = document.getElementById("countdown");
+
+  let interval = setInterval(()=>{
+    count--;
+    el.innerText = count;
+
+    if(count === 0){
+      clearInterval(interval);
+
+      setTimeout(()=>{
+        document.getElementById("pageCount").classList.remove("active");
+        document.getElementById("pageWish").classList.add("active");
+
+        playMusic();
+        bigFireworks();
+
+        setTimeout(()=>{
+          document.getElementById("pageWish").classList.remove("active");
+          document.getElementById("page3").classList.add("active");
+        },2000);
+
+      },500);
+    }
+  },1000);
+}
+
+// MUSIC
+function playMusic(){
+  let m=document.getElementById("music");
+  m.volume=0;
+  m.currentTime=0;
+  m.play().catch(()=>{});
+
+  let v=0;
+  let fade=setInterval(()=>{
+    v+=0.05;
+    m.volume=v;
+    if(v>=1) clearInterval(fade);
+  },150);
+}
+
+// DIFFERENT FIREWORKS (BIG)
+function bigFireworks(){
+  for(let i=0;i<100;i++){
+    let d=document.createElement("div");
+    d.className="spark";
+    document.body.appendChild(d);
+
+    let x=window.innerWidth/2;
+    let y=window.innerHeight/2;
+
+    d.style.left=x+"px";
+    d.style.top=y+"px";
+
+    let a=Math.random()*2*Math.PI;
+    let dist=Math.random()*300;
+
+    d.style.background=`hsl(${Math.random()*360},100%,70%)`;
+    d.style.boxShadow="0 0 15px white";
+
+    d.animate([
+      {transform:"translate(0,0)",opacity:1},
+      {transform:`translate(${Math.cos(a)*dist}px,${Math.sin(a)*dist}px)`,opacity:0}
+    ],{duration:1400});
+
+    setTimeout(()=>d.remove(),1400);
+  }
+}
+
+// NORMAL FIREWORKS
+function fireworks(){
+  for(let i=0;i<60;i++){
+    let d=document.createElement("div");
+    d.className="spark";
+    document.body.appendChild(d);
+
+    let x=window.innerWidth/2;
+    let y=window.innerHeight/2;
+
+    d.style.left=x+"px";
+    d.style.top=y+"px";
+
+    let a=Math.random()*2*Math.PI;
+    let dist=Math.random()*200;
+
+    d.style.background=`hsl(${Math.random()*360},100%,70%)`;
+
+    d.animate([
+      {transform:"translate(0,0)",opacity:1},
+      {transform:`translate(${Math.cos(a)*dist}px,${Math.sin(a)*dist}px)`,opacity:0}
+    ],{duration:1000});
+
+    setTimeout(()=>d.remove(),1000);
+  }
+}
+
+// CAKE
+function blowCandle(){
+  let s=document.getElementById("blow");
+  s.currentTime=0;
+  s.play().catch(()=>{});
+
+  document.getElementById("flames").style.display="none";
+
+  setTimeout(()=>{
+    document.getElementById("cakeMsg").style.display="block";
+    fireworks();
+  },600);
+}
+
+// CELEBRATE
+function celebrate(){
+  for(let i=0;i<8;i++){
+    setTimeout(()=>{
+      fireworks();
+      let b=document.getElementById("boom");
+      b.currentTime=0;
+      b.play().catch(()=>{});
+    },i*300);
+  }
+}
+
+function startCelebration(){
+  playMusic();
+  document.getElementById("bigMsg").style.display="block";
+}
+
+</script>
+
+</body>
+</html>
